@@ -1,6 +1,6 @@
 class Stage
-    attr_accessor :name
-    attr_reader :id
+  attr_accessor :name
+  attr_reader :id
 
   @@stages = {}
   @@total_rows = 0
@@ -27,6 +27,25 @@ class Stage
     @@total_rows = 0
   end
 
+  def self.find(id)
+    @@stages[id]
+  end
 
+  def update(name)
+    self.name = name
+    @@stages[self.id] = Stage.new({ :name => self.name, :id => self.id })
+  end
+
+  def delete()
+    @@stages.delete(self.id)
+  end
+
+  def self.search(search)
+    @@stages.values().select { |a| a.name.match /#{search}/i}
+  end
+
+  def self.sort
+    @@stages.values().sort_by{ |k,v| k.name}
+  end
 
 end
