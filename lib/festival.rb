@@ -48,4 +48,8 @@ class Stage
     @@stages.values().sort_by{ |k,v| k.name}
   end
 
+  def artists
+    Artist.find_by_stage(self.id)
+  end
+
 end

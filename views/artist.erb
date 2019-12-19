@@ -1,0 +1,14 @@
+<h2>Artist name: <%= @artist.name() %> </h2>
+
+<form action="/stages/<%= @stage.id() %>/artists/<%= @artist.id() %>" method="post">
+  <input type="hidden" name="_method" value="patch">
+  <label for="name">Rename Artist!</label>
+  <input type="text" name="name" id="name">
+  <button type="submit" name="button">Update!</button>
+</form>
+<form class="" action="/stages/<%= @stage.id() %>/artists/<%= @artist.id() %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <button type="submit" name="button">Cancel this band!</button>
+</form>
+
+<a href="/stages/<%= @stage.id %>/artists/<%= @artist.id %>">Take me back!</a>

@@ -1,0 +1,18 @@
+<h2>Stage Name: <%= @stage.name %></h2>
+
+<h3>Artists performing on this stage:</h3>
+
+<% if @artists %>
+  <ul>
+    <% @artists.each do |artist| %>
+    <li><a href="/stages/<%= @stage.id %>/artists/<%= artist.id %>"><%= artist.name %></a></li>
+    <% end %>
+  </ul>
+  <% else %>
+    <p>There are no artists for this stage (yet!)!!</p>
+  <% end %>
+
+
+<p><a href="/stages/<%= @stage.id() %>/edit">Edit this Stage!</a></p>
+
+<p><a href="/stages">Return to main stage page!</a></p>

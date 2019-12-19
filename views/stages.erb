@@ -1,0 +1,19 @@
+<h1>Welcome!</h1>
+
+<h2>Stages:</h2>
+
+
+<% if @stages.any? %>
+<ul>
+  <% @stages.each do |stage| %>
+  <li><a href="/stages/<%= stage.id %>"><%= stage.name %></a></li>
+<% end %>
+</ul>
+<% else %>
+<p> There are no stages!</p>
+<% end %>
+
+
+<form class="" action="/stages/new" method="get">
+  <button type="submit" name="button">Add a new stage!</button>
+</form>
