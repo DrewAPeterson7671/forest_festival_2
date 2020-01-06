@@ -3,7 +3,10 @@ require('sinatra/reloader')
 require('./lib/festival')
 require('./lib/artist')
 require('pry')
+require('pg')
 also_reload('lib/**/*.rb')
+
+DB = PG.connect({:dbname => "forest_festival"})
 
 get('/') do
   redirect to('/stages')
