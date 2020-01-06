@@ -5,3 +5,4 @@
   gem 'pry'
   gem 'fileutils'
   gem 'sinatra-contrib'
+  gem 'pg'

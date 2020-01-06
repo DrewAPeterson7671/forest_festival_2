@@ -1,6 +1,7 @@
 require('rspec')
 require('festival')
 require('pry')
+require('spec_helper')
 
 describe(Stage) do
 

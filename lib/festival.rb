@@ -2,20 +2,29 @@ class Stage
   attr_accessor :name
   attr_reader :id
 
-  @@stages = {}
-  @@total_rows = 0
-
   def initialize(attributes)
     @name = attributes.fetch(:name)
-    @id = attributes.fetch(:id) || @@total_rows += 1
+    @id = attributes.fetch(:id)
+  end
+
+  def self.get_stages(db_query)
+    returned_stages = DB.exec(db_query)
+    stages = []
+    returned_stages.each() do |stage|
+      name = stage.fetch('name')
+      id = stage.fetch('id').to_i
+      stages.push(Stage.new({:name => name, :id => id}))
+    end
+    stages
   end
 
   def self.all()
-    @@stages.values()
+    self.get_stages("SELECT * FROM stages;")
   end
 
   def save
-    @@stages[self.id] = Stage.new({ :name => self.name, :id => self.id})
+    result = DB.exec("INSERT INTO stages (name) VALUES ('#{@name}') RETURNING id;")
+    @id = result.first().fetch('id').to_i
   end
 
   def ==(stage_to_compare)
@@ -23,33 +32,32 @@ class Stage
   end
 
   def self.clear
-    @@stages = {}
-    @@total_rows = 0
+    DB.exec('DELETE FROM stages *;')
   end
 
   def self.find(id)
-    @@stages[id]
+    self.get_stages("SELECT * FROM stages WHERE id = #{id};").first
   end
 
   def update(name)
-    self.name = name
-    @@stages[self.id] = Stage.new({ :name => self.name, :id => self.id })
+    @name = name
+    DB.exec("UPDATE stages SET name = '#{@name}' WHERE id = #{@id};")
   end
 
   def delete()
-    @@stages.delete(self.id)
+    DB.exec("DELETE FROM stages WHERE id = #{@id};")
   end
 
   def self.search(search)
-    @@stages.values().select { |a| a.name.match /#{search}/i}
+    self.get_stages("SELECT * FROM stages WHERE lower(name) LIKE '%#{search.downcase}%';")
   end
 
   def self.sort
-    @@stages.values().sort_by{ |k,v| k.name}
+    self.get_stages("SELECT * FROM stages ORDER BY name;")
   end
 
   def artists
-    Artist.find_by_stage(self.id)
+    Artist.find_by_stage(@id)
   end
 
 end

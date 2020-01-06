@@ -2,6 +2,7 @@ require('rspec')
 require('festival')
 require('pry')
 require('artist')
+require('spec_helper')
 
 describe '#Artist' do
   before(:each) do

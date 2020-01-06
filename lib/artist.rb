@@ -2,13 +2,11 @@ class Artist
   attr_reader :id
   attr_accessor :name, :stage_id
 
-  @@artists = {}
-  @@total_rows = 0
 
   def initialize(attributes)
     @name = attributes.fetch(:name)
     @stage_id = attributes.fetch(:stage_id)
-    @id = attributes.fetch(:id) || @@total_rows += 1
+    @id = attributes.fetch(:id)
   end
 
   def ==(artist_to_compare)
@@ -16,35 +14,46 @@ class Artist
   end
 
   def self.clear
-    @@artists = {}
+    DB.exec('DELETE FROM artists *;')
+  end
+
+  def self.get_artists(db_query)
+    returned_artists = DB.exec(db_query)
+    artists = []
+    returned_artists.each() do |artist|
+      name = artist.fetch('name')
+      id = artist.fetch('id').to_i
+      stage_id = artist.fetch('stage_id').to_i
+      artists.push(Artist.new({:name => name, :id => id, :stage_id => stage_id}))
+    end
+    artists
   end
 
   def self.all
-    @@artists.values
+    self.get_artists("SELECT * FROM artists;")
   end
 
   def save
-    @@artists[self.id] = Artist.new({:name => self.name , :stage_id => self.stage_id, :id => self.id})
+    result = DB.exec("INSERT INTO artists (name, stage_id) VALUES ('#{@name}', #{@stage_id}) RETURNING id;")
+    @id = result.first().fetch('id').to_i
   end
 
   def self.find(id)
-    @@artists[id]
+    self.get_artists("SELECT * FROM artists WHERE id = #{id};").first
   end
 
   def update(name, stage_id)
-    self.name = name
-    self.stage_id = stage_id
-    @@artists[self.id] = Artist.new ({:name => self.name, :stage_id => self.stage_id, :id => self.id})
+    @name = name
+    @stage_id = stage_id
+    DB.exec("UPDATE artists SET name = '#{@name}', stage_id = #{@stage_id} WHERE id = #{@id};")
   end
 
   def delete
-    @@artists.delete(self.id)
+    DB.exec("DELETE FROM artists WHERE id = #{@id};")
   end
 
   def self.find_by_stage(stage)
-    artists = []
-    @@artists.values().each { |a| artists.push(a) if a.stage_id == stage }
-    artists
+    self.get_artists("SELECT * FROM artists WHERE stage_id = #{stage};")
   end
 
   def stage
